@@ -5,28 +5,21 @@ from flask import Flask
 from apscheduler.schedulers.background import BackgroundScheduler
 import time
 
-
 # export FLASK_APP=app.py
 # flask run
 
-
 def foo():
 	print("I am a job")
-
 
 app = Flask(__name__)
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(foo, 'interval', seconds=5)
 
-
-
 @app.route('/')
 def index():
 	print("Entered the index")
 	return "megalink scraper"
-
-
 
 # For heroku, when we deploy
 if __name__ == '__main__':
