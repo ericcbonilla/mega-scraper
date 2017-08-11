@@ -34,3 +34,5 @@ for sub in SUBREDDIT_LIST:
             # print("Text: ", truncate(selftext))
             # print("Score: ", post.score)
             print("---------------------------------\n")
+
+print("test")
