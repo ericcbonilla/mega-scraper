@@ -28,11 +28,10 @@ for sub in SUBREDDIT_LIST:
         url = unicodedata.normalize('NFKD', post.url).encode('ascii','ignore')
 
         if (QUERY in title):
+            print(post)
             print(sub)
             print("Title: ", title)
             print("URL: ", url)
             # print("Text: ", truncate(selftext))
             # print("Score: ", post.score)
             print("---------------------------------\n")
-
-print("test")
