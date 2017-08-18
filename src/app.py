@@ -1,12 +1,8 @@
-# Created by Immanuel Amirtharaj
-# app.py
-
-from flask import Flask
-from apscheduler.schedulers.background import BackgroundScheduler
 import time
-
-# export FLASK_APP=app.py
-# flask run
+from flask import Flask, render_template
+from apscheduler.schedulers.background import BackgroundScheduler
+from bot import *
+from forms import QueryForm
 
 def foo():
 	print("I am a job")
@@ -14,7 +10,7 @@ def foo():
 app = Flask(__name__)
 scheduler = BackgroundScheduler()
 scheduler.start()
-scheduler.add_job(foo, 'interval', seconds=5)
+scheduler.add_job(foo, 'interval', seconds=10)
 
 @app.route('/')
 def index():

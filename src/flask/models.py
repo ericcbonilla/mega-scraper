@@ -27,7 +27,7 @@ class Task(Model):
 
 	class Meta:
 		database = db
-		
+
 class Subscriber(Model):
 	taskId = ForeignKeyField(Task, related_name="task_subscribed_to")
 	userId = ForeignKeyField(User, related_name="user_owned")
