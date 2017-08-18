@@ -10,7 +10,8 @@ class EmailObject:
 		self.description = description
 		
 
-def send_message(emailObject):
+def send_message(destination, subject, description):
+	emailObject = EmailObject(destination, subject, description)
 	smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
 	smtpObj.ehlo()
 	smtpObj.starttls()
@@ -23,9 +24,8 @@ def send_message(emailObject):
 	smtpObj.sendmail('megascraper2017@gmail.com', emailObject.destination, payload)
 
 
-
 def email_tests():
-	send_message(EmailObject('megascraper2017@gmail.com', 'Email Test', 'This is an email test'))
+	send_message('megascraper2017@gmail.com', 'Email Test', 'This is an email test')
 
 
 
