@@ -3,43 +3,25 @@
 
 import peewee
 import time
-<<<<<<< HEAD
-from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask, request
-from models import Task, User, Subscriber
-from forms import AddTaskForm
-
-app = Flask(__name__)
-
-# export FLASK_APP=app.py
-# flask run
-
-def foo():
-    print("I am a job")
-
-scheduler = BackgroundScheduler()
-scheduler.start()
-scheduler.add_job(foo, 'interval', seconds=5)
-
-=======
 import datetime
-
-import email_manager
-from email_manager import EmailObject
-import reddit_manager
-
 import logging
-logging.basicConfig()
+import email_manager
+import reddit_manager
+import praw
+from constants import *
+
+from apscheduler.schedulers.background import BackgroundScheduler
+from flask import Flask, request, render_template, flash, session
+from models import Task, User, Subscriber
+from email_manager import EmailObject
 
 app = Flask(__name__)
+app.secret_key = 'super secret key'
+
+logging.basicConfig()
 
 last_searched_time = time.time()
 
-
-# export FLASK_APP=app.py
-# flask run
-
->>>>>>> flask-db
 
 def create_or_find_user(email):
     try:
@@ -68,9 +50,13 @@ def create_or_find_subscriber(user_id, task_id):
         Subscriber.create(userId=user_id, taskId = task_id).save()
         found_subscriber = Subscriber.get(Subscriber.userId == user_id, Subscriber.taskId == task_id)
 
-<<<<<<< HEAD
     return found_subscriber
-=======
+
+
+def foo():
+    print("I am a job")
+
+
 def handle_job():
 	print("I am a job")
 	task_list = Task.select()
@@ -98,12 +84,24 @@ def handle_job():
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(handle_job, 'interval', seconds=10)
->>>>>>> flask-db
+
+
+def retrieve_posts(subreddits, search_query='', limit=5):
+    reddit = praw.Reddit(SITE_NAME, user_agent=USER_AGENT)
+    results = {}
+
+    # TODO: implement retrieval by search term
+    if not search_query:
+        for sub in subreddits:
+            results[sub] =  {}
+            for post in reddit.subreddit(sub).hot(limit=limit):
+                results[sub][post.title] = post.url
+    return results
 
 
 # Handle email
 @app.route('/tasks/new', methods=['POST'])
-def addTask():
+def add_task():
 
     email = request.form['email']
     keywords = request.form['keywords']
@@ -116,32 +114,40 @@ def addTask():
     return "Success"
 
 
-@app.route('/forms/add-task', methods=['GET', 'POST'])
-def addTaskThroughForm():
-
-    form = AddTaskForm(request.form)
+@app.route('/add-task', methods=['GET', 'POST'])
+def search():
+    error = None
     if request.method == 'POST':
-        new_task = create_or_find_task(form.query.data)
-        new_user = create_or_find_user(form.email.data)
-        subscriber = create_or_find_subscriber(new_user.id, new_task.id)
+        search_terms = request.form['search']
+        subreddits = request.form['subreddits']
+        # TODO: getting error: database is locked
+        # new_task = create_or_find_task(search_terms)
+        # new_user = create_or_find_task(request.form['email'])
+        # subscriber = create_or_find_subscriber(new_user.id, new_task.id)
 
-        flash('New subscriber created: ' + str(subscriber.id))
-        # return redirect(url_for('login'))
-    return render_template('templates/add_task.html', form=form)
+        # TODO: Validation
+        # if request.form['username'] != current_app.config['USERNAME']:
+        #     error = 'Invalid username'
+        # elif request.form['password'] != current_app.config['PASSWORD']:
+        #     error = 'Invalid password'
+        # else:
+        # flash('New subscriber created: ' + str(subscriber.id)
+        #  + 'under ' + new_user.email)
+        session['logged_in'] = True
+        flash(str(retrieve_posts([subreddits])))
+
+        # return redirect(url_for('flaskr.show_entries'))
+    return render_template('add_task.html', error=error)
+
 
 @app.route('/')
 def index():
     print("Entered the index")
     return "megalink scraper index"
 
+
 # For heroku, when we deploy
 if __name__ == '__main__':
-<<<<<<< HEAD
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
-=======
-	# Bind to PORT if defined, otherwise default to 5000.
-	port = int(os.environ.get('PORT', 5000))
-	app.run(host='0.0.0.0', port=port, threaded=True)
->>>>>>> flask-db
+    app.run(host='0.0.0.0', port=port, threaded=True)

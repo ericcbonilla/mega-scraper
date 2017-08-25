@@ -20,3 +20,4 @@ def fetch_posts(subreddits=SUBREDDIT_LIST, query=QUERY):
             if (query in post.title):
                 results[sub][post.title] = post.url
     return results
+    
